@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>Muro de Mensajes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <h1>Muro de Mensajes</h1>
@@ -22,6 +23,18 @@
 
   <hr>
   <h2>Mensajes</h2>
-  <p>(Aquí aparecerán los mensajes en el Commit 6)</p>
+
+  {% if mensajes and mensajes|length > 0 %}
+    <ul>
+      {% for id, nombre, mensaje, created_at in mensajes %}
+        <li>
+          <strong>{{ nombre }}</strong> — <em>{{ created_at }}</em><br>
+          {{ mensaje }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Aún no hay mensajes. ¡Sé el primero en publicar!</p>
+  {% endif %}
 </body>
 </html>

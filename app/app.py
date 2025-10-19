@@ -45,8 +45,14 @@ def index():
                 )
             conn.close()
         return redirect("/")
-    # GET
-    return render_template("index.html")
+    # GET: leer todos los mensajes
+    conn = get_connection()
+    with conn.cursor() as cur:
+        cur.execute("SELECT id, nombre, mensaje, created_at FROM mensajes ORDER BY created_at DESC;")
+        mensajes = cur.fetchall()
+    conn.close()
+    # mensajes: lista de tuplas (id, nombre, mensaje, created_at)
+    return render_template("index.html", mensajes=mensajes)
 
 if __name__ == "__main__":
     init_db()
