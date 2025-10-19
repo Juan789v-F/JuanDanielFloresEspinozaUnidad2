@@ -1,11 +1,17 @@
 # Muro de Mensajes (Flask + Postgres + Docker)
 
-Proyecto de ejemplo: formulario de Nombre y Mensaje, lista de mensajes guardados en PostgreSQL.
+Aplicación sencilla:
+- Formulario con **Nombre** y **Mensaje**
+- Lista de mensajes guardados en **PostgreSQL**
+- Backend con **Flask**
+- **Docker Compose** levanta `web` y `db`
 
-## Stack
-- Backend: Flask (Python)
-- DB: PostgreSQL
-- Contenedores: Docker + Docker Compose
-- Versionamiento: Git + GitHub
+## Requisitos
+- Docker Desktop (o Docker Engine)
+- Docker Compose v2
+- Git
 
-Se construirá en 8 commits con despliegue local vía Docker.
+## Clonar este repositorio
+```bash
+git clone https://github.com/Juan789v-F/JuanDanielFloresEspinozaUnidad2.git
+cd JuanDanielFloresEspinozaUnidad2
