@@ -1,10 +1,9 @@
 import os
 import time
 import psycopg2
-from flask import Flask
+from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
-
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_connection(retries=10, delay=3):
@@ -32,11 +31,10 @@ def init_db():
         """)
     conn.close()
 
-@app.route("/")
-def hello():
-    return "Hola Mundo! (La base de datos está inicializada)"
+@app.route("/", methods=["GET"])
+def index_get():
+    return render_template("index.html")
 
 if __name__ == "__main__":
-    # Inicializar DB al arranque del contenedor
     init_db()
     app.run(host="0.0.0.0", port=5000, debug=True)
