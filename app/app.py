@@ -31,8 +31,21 @@ def init_db():
         """)
     conn.close()
 
-@app.route("/", methods=["GET"])
-def index_get():
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        nombre = request.form.get("nombre", "").strip()
+        mensaje = request.form.get("mensaje", "").strip()
+        if nombre and mensaje:
+            conn = get_connection()
+            with conn.cursor() as cur:
+                cur.execute(
+                    "INSERT INTO mensajes (nombre, mensaje) VALUES (%s, %s);",
+                    (nombre, mensaje)
+                )
+            conn.close()
+        return redirect("/")
+    # GET
     return render_template("index.html")
 
 if __name__ == "__main__":
