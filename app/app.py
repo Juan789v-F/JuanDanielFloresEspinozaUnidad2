@@ -1,10 +1,20 @@
 import os
 import time
 import psycopg2
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, abort
+from dotenv import load_dotenv
+
+# Cargar .env explícitamente
+load_dotenv()
 
 app = Flask(__name__)
+
 DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL no está definida. Revisa que .env esté montado y contenga:\n"
+        "DATABASE_URL=postgresql://usuario:clave_segura@db:5432/mensajesdb"
+    )
 
 def get_connection(retries=10, delay=3):
     last_err = None
@@ -31,6 +41,14 @@ def init_db():
         """)
     conn.close()
 
+# 🔧 Ejecutar la inicialización una vez al importar la app (compatible con Flask 3)
+try:
+    init_db()
+except Exception as e:
+    # Si no puede inicializar (p. ej. DB aún no lista), fallará con 500 en tiempo de request,
+    # pero aquí dejamos rastro claro en logs del contenedor.
+    app.logger.exception("Error inicializando la base de datos al inicio: %s", e)
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
@@ -45,15 +63,11 @@ def index():
                 )
             conn.close()
         return redirect("/")
-    # GET: leer todos los mensajes
+
+    # GET: listar mensajes
     conn = get_connection()
     with conn.cursor() as cur:
         cur.execute("SELECT id, nombre, mensaje, created_at FROM mensajes ORDER BY created_at DESC;")
         mensajes = cur.fetchall()
     conn.close()
-    # mensajes: lista de tuplas (id, nombre, mensaje, created_at)
     return render_template("index.html", mensajes=mensajes)
-
-if __name__ == "__main__":
-    init_db()
-    app.run(host="0.0.0.0", port=5000, debug=True)
